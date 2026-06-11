@@ -28,10 +28,13 @@ const httpServer = createServer(app);
 initializeSocket(httpServer);
 
 app.use(
-	cors({
-		origin: "http://localhost:3000",
-		credentials: true,
-	})
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "https://spotify-clone-peach-tau.vercel.app",
+    ],
+    credentials: true,
+  })
 );
 
 app.use(express.json()); // to parse req.body
