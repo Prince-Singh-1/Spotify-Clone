@@ -31,7 +31,7 @@ app.use(
   cors({
     origin: [
       "http://localhost:3000",
-      "https://spotify-clone-peach-tau.vercel.app",
+      "https://spotify-clone-peach-tau.vercel.app"
     ],
     credentials: true,
   })
