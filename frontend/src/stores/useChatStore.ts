@@ -22,18 +22,23 @@ interface ChatStore {
 	setSelectedUser: (user: User | null) => void;
 }
 
-const baseURL = import.meta.env.MODE === "development" ? "http://localhost:5000" : "/";
+// CHANGE THIS
+const baseURL =
+	import.meta.env.MODE === "development"
+		? "http://localhost:5000"
+		: "https://spotify-clone-0prq.onrender.com";
 
 const socket = io(baseURL, {
-	autoConnect: false, // only connect if user is authenticated
+	autoConnect: false,
 	withCredentials: true,
+	transports: ["websocket", "polling"],
 });
 
 export const useChatStore = create<ChatStore>((set, get) => ({
 	users: [],
 	isLoading: false,
 	error: null,
-	socket: socket,
+	socket,
 	isConnected: false,
 	onlineUsers: new Set(),
 	userActivities: new Map(),
@@ -48,7 +53,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			const response = await axiosInstance.get("/users");
 			set({ users: response.data });
 		} catch (error: any) {
-			set({ error: error.response.data.message });
+			set({ error: error.response?.data?.message || "Error" });
 		} finally {
 			set({ isLoading: false });
 		}
@@ -118,7 +123,11 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 		const socket = get().socket;
 		if (!socket) return;
 
-		socket.emit("send_message", { receiverId, senderId, content });
+		socket.emit("send_message", {
+			receiverId,
+			senderId,
+			content,
+		});
 	},
 
 	fetchMessages: async (userId: string) => {
@@ -127,7 +136,7 @@ export const useChatStore = create<ChatStore>((set, get) => ({
 			const response = await axiosInstance.get(`/users/messages/${userId}`);
 			set({ messages: response.data });
 		} catch (error: any) {
-			set({ error: error.response.data.message });
+			set({ error: error.response?.data?.message || "Error" });
 		} finally {
 			set({ isLoading: false });
 		}
